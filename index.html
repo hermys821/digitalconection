@@ -9,8 +9,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,10 +20,10 @@
             body: ['DM Sans', 'sans-serif'],
           },
           colors: {
-            acid: '#00D4FF', // Cyan claro como el del logo
-            dark: '#0A1128', // Azul ultra oscuro para el fondo
-            mid: '#111836',
-            card: '#161F42',
+            brand: '#00D4FF',   // Cyan principal
+            dark: '#080C16',    // Fondo ultra oscuro
+            card: '#111827',    // Gris azulado para tarjetas
+            surface: '#1F2937'  // Detalles y hover
           },
           animation: {
             'fade-up': 'fadeUp 0.6s ease forwards',
@@ -48,7 +47,7 @@
     }
 
     body {
-      background: #0A1128;
+      background: #080C16;
       font-family: 'DM Sans', sans-serif;
       color: #fff;
       overflow-x: hidden;
@@ -64,71 +63,36 @@
 
     .card-hover:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0, 212, 255, 0.15);
-    }
-
-    .badge-stock {
-      animation: pulse 2s infinite;
-    }
-
-    .btn-wa {
-      background: #25D366;
-      transition: all 0.2s ease;
-    }
-
-    .btn-wa:hover {
-      background: #1da851;
-      transform: scale(1.03);
-    }
-
-    .btn-wa:active {
-      transform: scale(0.97);
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, #1a1a1a 25%, #262626 50%, #1a1a1a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 200% 0
-      }
-
-      100% {
-        background-position: -200% 0
-      }
-    }
-
-    .filter-btn.active {
-      background: #00D4FF;
-      color: #0A1128;
-    }
-
-    .filter-btn {
-      transition: all 0.2s ease;
-    }
-
-    .hero-text {
-      line-height: 0.9;
     }
 
     input[type=search]::-webkit-search-cancel-button {
       display: none;
     }
 
-    .stock-bar {
-      height: 3px;
-      background: #262626;
-      border-radius: 2px;
-      overflow: hidden;
+    .skeleton {
+      background: linear-gradient(90deg, #111827 25%, #1F2937 50%, #111827 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
     }
 
-    .stock-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.5s ease;
+    @keyframes shimmer {
+      0% { background-position: 200% 0 }
+      100% { background-position: -200% 0 }
+    }
+    
+    /* Ocultar scrollbar para un look más limpio */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080C16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1F2937;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00D4FF;
     }
   </style>
 </head>
@@ -139,25 +103,16 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    //JavaScript
     // =============================================
-    // CONFIGURACIÓN — EDITAR ESTOS VALORES
+    // CONFIGURACIÓN 
     // =============================================
     const CONFIG = {
-      // 1. Reemplazá con tu ID de Google Sheet (DEBE LLEVAR COMILLAS)
       SHEET_ID: "1GKlRCGVZNGabKMx9Ps4jCnO3qxgDRRC_376T29i5OEk",
-      // 2. Reemplazá con el nombre exacto de tu hoja (DEBE LLEVAR COMILLAS)
       SHEET_NAME: "Hoja 1",
-      // 3. Tu número de WhatsApp con código de país (sin + ni espacios)
       WHATSAPP: "5493743603611",
-      // 4. Mensaje predeterminado de WhatsApp
       WA_MSG: "Hola! Me interesa el siguiente producto: ",
-      // Nombre de tu tienda
       STORE_NAME: "Digital Conection",
-      STORE_TAGLINE: "Venta de Celulares & Tecnología",
     };
-    // Columnas esperadas en Google Sheets (A, B, C...):
-    // A: Nombre | B: Marca | C: Precio | D: Stock | E: URL Imagen | F: Descripción | G: Categoría
 
     const DEMO_PRODUCTS = [
       { nombre: "iPhone 15 Pro Max", marca: "Apple", precio: "1899999", stock: "8", imagen: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1693009278145", descripcion: "Titanio natural, chip A17 Pro, cámara 48MP", categoria: "iPhone" },
@@ -178,14 +133,15 @@
       const n = parseInt(stock, 10) || 0;
       const max = 20;
       const pct = Math.min((n / max) * 100, 100);
-      const color = n === 0 ? "#ef4444" : n <= 5 ? "#f59e0b" : "#C8FF00";
+      const color = n === 0 ? "#ef4444" : n <= 5 ? "#f59e0b" : "#00D4FF"; 
+      
       return (
         <div>
-          <div className="stock-bar mt-1">
-            <div className="stock-fill" style={{ width: `${pct}%`, background: color }} />
+          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden mt-2">
+            <div className="h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${pct}%`, background: color }} />
           </div>
-          <span className="text-xs mt-1 block" style={{ color }}>
-            {n === 0 ? "Sin stock" : n <= 5 ? `⚡ Últimas ${n} unidades` : `✓ Stock: ${n} uds`}
+          <span className="text-xs mt-1.5 block font-medium tracking-wide" style={{ color }}>
+            {n === 0 ? "Sin stock" : n <= 5 ? `⚡ Últimas ${n} unidades` : `✓ Stock disponible: ${n}`}
           </span>
         </div>
       );
@@ -194,69 +150,79 @@
     function ProductCard({ product, onWA, onImageClick }) {
       const [imgError, setImgError] = useState(false);
       const inStock = parseInt(product.stock, 10) > 0;
+      
       return (
-        <div className="card-hover rounded-2xl overflow-hidden flex flex-col" style={{ background: "#1A1A1A", border: "1px solid #262626" }}>
+        <div className="card-hover rounded-2xl overflow-hidden flex flex-col bg-card border border-white/5 shadow-lg relative">
           <div
-            className="relative overflow-hidden cursor-pointer group"
-            style={{ aspectRatio: "4/3", background: "#111" }}
+            className="relative overflow-hidden cursor-pointer group bg-[#0A0A0A] aspect-[4/3]"
             onClick={() => {
               if (!imgError && product.imagen) onImageClick(product.imagen);
             }}
           >
             {!imgError && product.imagen && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.5)" }}>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" />
                 </svg>
               </div>
             )}
+            
             {!imgError ? (
-              <div className="w-full h-full p-3 flex items-center justify-center">
+              <div className="w-full h-full p-6 flex items-center justify-center">
                 <img
                   src={product.imagen}
                   alt={product.nombre}
-                  className="max-w-full max-h-full object-contain rounded-2xl transition-transform duration-500 hover:scale-110"
-                  style={{ background: "#fff", border: "4px solid #fff" }}
+                  className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
                   onError={() => setImgError(true)}
                 />
               </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center" style={{ color: "#444" }}>
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <div className="w-full h-full flex items-center justify-center text-gray-700">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                   <rect x="2" y="4" width="20" height="16" rx="2" /><circle cx="8.5" cy="9.5" r="1.5" /><path d="m21 15-5-5L5 20" />
                 </svg>
               </div>
             )}
-            <div className="absolute top-3 left-3">
-              <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ background: "#C8FF00", color: "#0A0A0A" }}>
+            
+            <div className="absolute top-3 left-3 z-20">
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-dark/80 text-brand border border-brand/20 backdrop-blur-md">
                 {product.marca}
               </span>
             </div>
+            
             {!inStock && (
-              <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }}>
-                <span className="font-display text-2xl tracking-wider" style={{ color: "#ef4444" }}>AGOTADO</span>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20 backdrop-blur-sm">
+                <span className="font-display text-3xl tracking-widest text-red-500 border-2 border-red-500 px-4 py-1 rounded-lg transform -rotate-12">AGOTADO</span>
               </div>
             )}
           </div>
-          <div className="p-4 flex flex-col flex-1">
-            <p className="text-xs mb-1" style={{ color: "#888" }}>{product.categoria || product.marca}</p>
-            <h3 className="font-semibold text-base leading-tight mb-1">{product.nombre}</h3>
-            {product.descripcion && <p className="text-xs mb-3 leading-relaxed" style={{ color: "#999" }}>{product.descripcion}</p>}
-            <div className="mt-auto">
-              <div className="font-display text-2xl tracking-wide mb-1" style={{ color: "#C8FF00" }}>
+          
+          <div className="p-5 flex flex-col flex-1">
+            <p className="text-xs font-medium text-brand/70 tracking-wider uppercase mb-1">{product.categoria || product.marca}</p>
+            <h3 className="font-bold text-lg leading-tight mb-2 text-white">{product.nombre}</h3>
+            {product.descripcion && <p className="text-sm mb-4 leading-relaxed text-gray-400 flex-1">{product.descripcion}</p>}
+            
+            <div className="mt-auto border-t border-white/5 pt-4">
+              <div className="font-display text-3xl tracking-wide mb-1 text-white">
                 {formatPrice(product.precio)}
               </div>
+              
               <StockBar stock={product.stock} />
+              
               <button
                 onClick={() => onWA(product)}
                 disabled={!inStock}
-                className="btn-wa mt-3 w-full flex items-center justify-center gap-2 rounded-xl py-3 font-semibold text-sm text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-sm transition-all duration-300 ${
+                  inStock 
+                    ? "bg-brand text-dark hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]" 
+                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                }`}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
                   <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
                 </svg>
-                {inStock ? "Consultar por WhatsApp" : "Sin Stock"}
+                {inStock ? "Lo quiero" : "Sin Stock"}
               </button>
             </div>
           </div>
@@ -266,14 +232,14 @@
 
     function SkeletonCard() {
       return (
-        <div className="rounded-2xl overflow-hidden" style={{ background: "#1A1A1A", border: "1px solid #262626" }}>
-          <div className="skeleton" style={{ height: "220px" }} />
-          <div className="p-4 space-y-3">
+        <div className="bg-card rounded-2xl overflow-hidden border border-white/5">
+          <div className="skeleton h-[220px] w-full" />
+          <div className="p-5 space-y-3">
             <div className="skeleton h-3 w-20 rounded" />
             <div className="skeleton h-5 w-4/5 rounded" />
             <div className="skeleton h-3 w-3/4 rounded" />
             <div className="skeleton h-7 w-2/5 rounded mt-4" />
-            <div className="skeleton h-10 w-full rounded-xl mt-2" />
+            <div className="skeleton h-12 w-full rounded-xl mt-2" />
           </div>
         </div>
       );
@@ -378,75 +344,71 @@
         <div className="min-h-screen">
 
           {/* NAVBAR */}
-          <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4" style={{ background: "rgba(10,17,40,0.9)", backdropFilter: "blur(12px)", borderBottom: "1px solid #161F42" }}>
-            <div className="flex items-center gap-3">
-              <img src="logo.jpeg" alt="Logo Digital Conection" className="h-10 w-auto rounded-lg bg-white p-1" onError={(e) => { e.target.style.display = 'none'; }} />
-              <div className="font-display text-2xl tracking-widest hidden sm:block" style={{ color: "#00D4FF" }}>
-                {CONFIG.STORE_NAME}
+          <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-dark/80 backdrop-blur-md border-b border-white/5">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+              <img src="logo.jpeg" alt="Logo" className="h-10 w-auto rounded border border-white/10" onError={(e) => { e.target.style.display = 'none'; }} />
+              <div className="font-display text-2xl tracking-widest hidden sm:block text-white">
+                DIGITAL<span className="text-brand">CONECTION</span>
               </div>
             </div>
-            <button onClick={openWAGeneral} className="btn-wa flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
-              </svg>
-              Consultanos
-            </button>
+            
+            <div className="flex items-center gap-6">
+              <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })} 
+                className="hidden md:block text-sm font-medium text-gray-300 hover:text-brand transition-colors">
+                Ver Equipos
+              </button>
+              
+              <button onClick={openWAGeneral} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-[#25D366] hover:bg-[#1da851] transition-transform hover:scale-105 shadow-lg shadow-[#25D366]/20">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
+                </svg>
+                Consultanos
+              </button>
+            </div>
           </nav>
 
           {/* HERO */}
-          <section ref={heroRef} className="pt-32 pb-20 px-6 relative overflow-hidden" style={{ minHeight: "60vh", display: "flex", alignItems: "center" }}>
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 70%)" }} />
-            <div className="max-w-6xl mx-auto w-full text-center sm:text-left">
-              <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold mb-6 mx-auto sm:mx-0" style={{ background: "rgba(0,212,255,0.1)", color: "#00D4FF", border: "1px solid rgba(0,212,255,0.3)" }}>
-                🔥 {enStock} modelos disponibles ahora
+          <section ref={heroRef} className="pt-32 pb-20 px-6 relative overflow-hidden flex items-center min-h-[70vh]">
+            <div className="absolute top-[-10%] left-1/2 transform -translate-x-1/2 w-full max-w-3xl h-96 opacity-20 blur-[100px] pointer-events-none" style={{ background: "radial-gradient(circle, #00D4FF 0%, transparent 80%)" }} />
+            
+            <div className="max-w-6xl mx-auto w-full text-center flex flex-col items-center relative z-10">
+              <div className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold mb-8 border border-brand/30 bg-brand/10 text-brand animate-fade-up">
+                🔥 {enStock} equipos listos para entregar hoy
               </div>
-              <h1 className="font-display hero-text mb-6" style={{ fontSize: "clamp(3rem, 10vw, 8rem)", color: "#fff" }}>
-                <span style={{ color: "#00D4FF" }}>DIGITAL</span><br />CONECTION
+              
+              <h1 className="font-display leading-[0.9] mb-6 text-white animate-fade-up" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", animationDelay: "0.1s" }}>
+                TU PRÓXIMO CELULAR <br />
+                <span className="text-brand">AL MEJOR PRECIO</span>
               </h1>
-              <p className="text-lg max-w-xl mb-8 mx-auto sm:mx-0" style={{ color: "#aaa" }}>
-                {CONFIG.STORE_TAGLINE} — Encontrá tu próximo celular con stock actualizado en tiempo real.
+              
+              <p className="text-lg max-w-2xl mb-10 text-gray-400 font-light animate-fade-up" style={{ animationDelay: "0.2s" }}>
+                Dejá de dar vueltas. Encontrá la mejor tecnología con stock real, precios transparentes y atención personalizada por WhatsApp.
               </p>
-              <div className="flex flex-wrap gap-4">
+              
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: "0.3s" }}>
                 <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })}
-                  className="px-8 py-3 rounded-full font-semibold text-sm" style={{ background: "#C8FF00", color: "#0A0A0A" }}>
-                  Ver catálogo →
+                  className="px-8 py-4 rounded-xl font-bold text-sm bg-brand text-dark transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+                  Explorar Catálogo
                 </button>
-                <button onClick={openWAGeneral} className="btn-wa flex items-center gap-2 px-8 py-3 rounded-full font-semibold text-sm text-white">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
-                  </svg>
-                  Hablar por WhatsApp
+                <button onClick={openWAGeneral} className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-sm text-white bg-white/5 border border-white/10 transition-all hover:bg-white/10 hover:border-brand/50">
+                  Asesoramiento gratis
                 </button>
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap gap-8 mt-14">
-                {[
-                  { label: "Productos", value: totalProductos },
-                  { label: "En stock", value: enStock },
-                  { label: "Envío", value: "24h" },
-                  { label: "Garantía", value: "1 año" },
-                ].map(s => (
-                  <div key={s.label}>
-                    <div className="font-display text-3xl" style={{ color: "#C8FF00" }}>{s.value}</div>
-                    <div className="text-xs" style={{ color: "#555" }}>{s.label}</div>
-                  </div>
-                ))}
               </div>
             </div>
           </section>
 
           {/* AVISO DEMO */}
           {usingDemo && (
-            <div className="mx-6 mb-8 p-4 rounded-xl flex items-start gap-3" style={{ background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.2)" }}>
-              <span style={{ color: "#00D4FF", fontSize: "18px" }}>⚙</span>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: "#00D4FF" }}>Modo demo activo</p>
-                <p className="text-xs mt-1" style={{ color: "#888" }}>
-                  Estás viendo datos de muestra. Para conectar tu Google Sheets abrí el archivo HTML, buscá la sección <code style={{ color: "#00D4FF" }}>CONFIG</code> y reemplazá <code style={{ color: "#00D4FF" }}>TU_SHEET_ID_AQUI</code> con el ID de tu planilla. Asegurate de que la hoja sea pública (Compartir → Cualquier persona con el enlace → Lector).
-                </p>
+            <div className="max-w-7xl mx-auto px-6 mb-8">
+              <div className="p-4 rounded-xl flex items-start gap-3 bg-brand/10 border border-brand/20">
+                <span className="text-brand text-lg">⚙</span>
+                <div>
+                  <p className="text-sm font-semibold text-brand">Modo demo activo</p>
+                  <p className="text-xs mt-1 text-gray-400">
+                    Estás viendo datos de muestra. Para conectar tu Google Sheets abrí el archivo HTML, buscá la sección <code className="text-brand">CONFIG</code> y reemplazá <code className="text-brand">TU_SHEET_ID_AQUI</code> con el ID de tu planilla.
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -455,15 +417,14 @@
           <section id="catalogo" className="px-6 pb-24 max-w-7xl mx-auto">
             <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
               <div>
-                <h2 className="font-display text-4xl tracking-wide">CATÁLOGO</h2>
-                <p className="text-sm mt-1" style={{ color: "#555" }}>{filtered.length} producto{filtered.length !== 1 ? "s" : ""}</p>
+                <h2 className="font-display text-4xl tracking-wide text-white">CATÁLOGO</h2>
+                <p className="text-sm mt-1 text-gray-400">{filtered.length} producto{filtered.length !== 1 ? "s" : ""}</p>
               </div>
-              {/* Ordenar */}
+              
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="text-sm px-4 py-2 rounded-lg outline-none"
-                style={{ background: "#1A1A1A", color: "#fff", border: "1px solid #262626" }}
+                className="text-sm px-4 py-2.5 rounded-xl outline-none bg-card text-white border border-white/10 focus:border-brand/50 transition-colors cursor-pointer"
               >
                 <option value="default">Ordenar por</option>
                 <option value="precio-asc">Menor precio</option>
@@ -474,7 +435,7 @@
 
             {/* BUSCADOR */}
             <div className="relative mb-6">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
               <input
@@ -482,22 +443,24 @@
                 placeholder="Buscar celular, marca..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl text-sm outline-none"
-                style={{ background: "#1A1A1A", color: "#fff", border: "1px solid #262626" }}
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm outline-none bg-card text-white border border-white/10 focus:border-brand/50 transition-colors"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "#555" }}>✕</button>
+                <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">✕</button>
               )}
             </div>
 
             {/* FILTROS */}
-            <div className="flex flex-wrap gap-2 mb-8">
+            <div className="flex flex-wrap gap-2 mb-10">
               {categorias.map(c => (
                 <button
                   key={c}
                   onClick={() => setFilter(c)}
-                  className={`filter-btn px-4 py-2 rounded-full text-sm font-medium ${filter === c ? "active" : ""}`}
-                  style={filter === c ? {} : { background: "#1A1A1A", color: "#888", border: "1px solid #262626" }}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                    filter === c 
+                      ? "bg-brand text-dark shadow-[0_0_15px_rgba(0,212,255,0.3)]" 
+                      : "bg-card text-gray-400 border border-white/5 hover:border-white/20 hover:text-white"
+                  }`}
                 >
                   {c}
                 </button>
@@ -506,54 +469,58 @@
 
             {/* GRID */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-24">
+              <div className="text-center py-24 bg-card rounded-3xl border border-white/5">
                 <div className="text-5xl mb-4">📱</div>
-                <p className="font-display text-2xl" style={{ color: "#444" }}>SIN RESULTADOS</p>
-                <p className="text-sm mt-2" style={{ color: "#555" }}>Probá con otra búsqueda o filtro</p>
-                <button onClick={() => { setSearch(""); setFilter("Todos"); }} className="mt-6 px-6 py-2 rounded-full text-sm" style={{ background: "#C8FF00", color: "#0A0A0A" }}>
-                  Ver todos
+                <p className="font-display text-2xl text-gray-300">SIN RESULTADOS</p>
+                <p className="text-sm mt-2 text-gray-500">Probá con otra búsqueda o filtro</p>
+                <button onClick={() => { setSearch(""); setFilter("Todos"); }} className="mt-6 px-6 py-2.5 rounded-full text-sm font-bold bg-brand text-dark">
+                  Ver todo el catálogo
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filtered.map((p, i) => <ProductCard key={i} product={p} onWA={openWA} onImageClick={setSelectedImage} />)}
               </div>
             )}
 
             {error && (
-              <p className="mt-4 text-xs text-center" style={{ color: "#f59e0b" }}>⚠ {error}</p>
+              <p className="mt-6 text-sm text-center text-red-400 bg-red-400/10 py-3 rounded-lg border border-red-400/20">⚠ {error}</p>
             )}
           </section>
 
           {/* CTA FINAL */}
           <section className="px-6 pb-24 max-w-4xl mx-auto text-center">
-            <div className="rounded-3xl p-12" style={{ background: "#1A1A1A", border: "1px solid #C8FF00" }}>
-              <p className="font-display text-5xl mb-4" style={{ color: "#C8FF00" }}>¿NO ENCONTRÁS<br />LO QUE BUSCÁS?</p>
-              <p className="text-sm mb-8" style={{ color: "#888" }}>Escribinos y te ayudamos a encontrar el celular ideal para vos.</p>
-              <button onClick={openWAGeneral} className="btn-wa inline-flex items-center gap-3 px-10 py-4 rounded-full font-bold text-base text-white">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
-                </svg>
-                Escribinos por WhatsApp
-              </button>
+            <div className="rounded-3xl p-12 bg-card border border-brand/30 relative overflow-hidden">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-10 pointer-events-none" style={{ background: "radial-gradient(circle, #00D4FF 0%, transparent 70%)" }} />
+              
+              <div className="relative z-10">
+                <p className="font-display text-5xl mb-4 text-brand">¿NO ENCONTRÁS<br />LO QUE BUSCÁS?</p>
+                <p className="text-sm mb-8 text-gray-400">Escribinos y te ayudamos a encontrar el celular ideal para vos al mejor precio.</p>
+                <button onClick={openWAGeneral} className="inline-flex items-center gap-3 px-10 py-4 rounded-full font-bold text-base text-white bg-[#25D366] hover:bg-[#1da851] transition-transform hover:scale-105 shadow-lg shadow-[#25D366]/20">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.529 5.857L0 24l6.335-1.499A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.857 9.857 0 0 1-5.031-1.378l-.361-.214-3.741.984.998-3.652-.236-.373A9.846 9.846 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118c5.467 0 9.882 4.415 9.882 9.882 0 5.467-4.415 9.882-9.882 9.882z" />
+                  </svg>
+                  Escribinos por WhatsApp
+                </button>
+              </div>
             </div>
           </section>
 
           {/* FOOTER */}
-          <footer className="px-6 py-8 text-center" style={{ borderTop: "1px solid #1a1a1a" }}>
-            <p className="font-display text-xl tracking-widest mb-2" style={{ color: "#C8FF00" }}>{CONFIG.STORE_NAME}</p>
-            <p className="text-xs" style={{ color: "#444" }}>© {new Date().getFullYear()} · Todos los precios en pesos argentinos · Stock sujeto a disponibilidad</p>
+          <footer className="px-6 py-8 text-center border-t border-white/5 bg-dark">
+            <p className="font-display text-2xl tracking-widest mb-2 text-brand">{CONFIG.STORE_NAME}</p>
+            <p className="text-xs text-gray-500">© {new Date().getFullYear()} · Todos los precios en pesos argentinos · Stock sujeto a disponibilidad</p>
           </footer>
 
           {/* BOTÓN WA FLOTANTE */}
           <button
             onClick={openWAGeneral}
-            className="btn-wa fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl z-50"
+            className="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl z-50 bg-[#25D366] hover:bg-[#1da851] transition-transform hover:scale-110"
             style={{ boxShadow: "0 4px 24px rgba(37,211,102,0.4)" }}
             title="WhatsApp"
           >
@@ -567,21 +534,20 @@
           {selectedImage && (
             <div
               className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
-              style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(5px)" }}
+              style={{ background: "rgba(8,12,22,0.9)", backdropFilter: "blur(8px)" }}
               onClick={() => setSelectedImage(null)}
             >
               <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
                 <button
                   onClick={() => setSelectedImage(null)}
-                  className="absolute top-0 right-0 md:-top-4 md:-right-4 w-12 h-12 rounded-full flex items-center justify-center z-10 transition-transform hover:scale-110"
-                  style={{ background: "rgba(255,255,255,0.1)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}
+                  className="absolute top-0 right-0 md:-top-4 md:-right-4 w-12 h-12 rounded-full flex items-center justify-center z-10 transition-transform hover:scale-110 bg-white/10 text-white border border-white/20 hover:bg-white/20"
                 >
                   ✕
                 </button>
                 <img
                   src={selectedImage}
                   alt="Vista ampliada"
-                  className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                  className="max-w-full max-h-full object-contain rounded-xl shadow-[0_0_50px_rgba(0,212,255,0.15)]"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
