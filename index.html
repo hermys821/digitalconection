@@ -9,7 +9,8 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -28,11 +29,21 @@
           animation: {
             'fade-up': 'fadeUp 0.6s ease forwards',
             'pulse-slow': 'pulse 3s infinite',
+            'scroll': 'scroll 30s linear infinite',
+            'float': 'float 6s ease-in-out infinite',
           },
           keyframes: {
             fadeUp: {
               '0%': { opacity: '0', transform: 'translateY(24px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            scroll: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-50%)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
             }
           }
         }
@@ -76,21 +87,29 @@
     }
 
     @keyframes shimmer {
-      0% { background-position: 200% 0 }
-      100% { background-position: -200% 0 }
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
     }
-    
+
     /* Ocultar scrollbar para un look más limpio */
     ::-webkit-scrollbar {
       width: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: #080C16;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #1F2937;
       border-radius: 4px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: #00D4FF;
     }
@@ -133,8 +152,8 @@
       const n = parseInt(stock, 10) || 0;
       const max = 20;
       const pct = Math.min((n / max) * 100, 100);
-      const color = n === 0 ? "#ef4444" : n <= 5 ? "#f59e0b" : "#00D4FF"; 
-      
+      const color = n === 0 ? "#ef4444" : n <= 5 ? "#f59e0b" : "#00D4FF";
+
       return (
         <div>
           <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden mt-2">
@@ -150,7 +169,7 @@
     function ProductCard({ product, onWA, onImageClick }) {
       const [imgError, setImgError] = useState(false);
       const inStock = parseInt(product.stock, 10) > 0;
-      
+
       return (
         <div className="card-hover rounded-2xl overflow-hidden flex flex-col bg-card border border-white/5 shadow-lg relative">
           <div
@@ -166,7 +185,7 @@
                 </svg>
               </div>
             )}
-            
+
             {!imgError ? (
               <div className="w-full h-full p-6 flex items-center justify-center">
                 <img
@@ -183,40 +202,39 @@
                 </svg>
               </div>
             )}
-            
+
             <div className="absolute top-3 left-3 z-20">
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-dark/80 text-brand border border-brand/20 backdrop-blur-md">
                 {product.marca}
               </span>
             </div>
-            
+
             {!inStock && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20 backdrop-blur-sm">
                 <span className="font-display text-3xl tracking-widest text-red-500 border-2 border-red-500 px-4 py-1 rounded-lg transform -rotate-12">AGOTADO</span>
               </div>
             )}
           </div>
-          
+
           <div className="p-5 flex flex-col flex-1">
             <p className="text-xs font-medium text-brand/70 tracking-wider uppercase mb-1">{product.categoria || product.marca}</p>
             <h3 className="font-bold text-lg leading-tight mb-2 text-white">{product.nombre}</h3>
             {product.descripcion && <p className="text-sm mb-4 leading-relaxed text-gray-400 flex-1">{product.descripcion}</p>}
-            
+
             <div className="mt-auto border-t border-white/5 pt-4">
               <div className="font-display text-3xl tracking-wide mb-1 text-white">
                 {formatPrice(product.precio)}
               </div>
-              
+
               <StockBar stock={product.stock} />
-              
+
               <button
                 onClick={() => onWA(product)}
                 disabled={!inStock}
-                className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-sm transition-all duration-300 ${
-                  inStock 
-                    ? "bg-brand text-dark hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]" 
-                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
-                }`}
+                className={`mt-5 w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-bold text-sm transition-all duration-300 ${inStock
+                  ? "bg-brand text-dark hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)]"
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                  }`}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
@@ -245,6 +263,41 @@
       );
     }
 
+    function BrandCarousel() {
+      // Usamos SimpleIcons para cargar los logos oficiales en formato SVG color blanco
+      const brands = [
+        { name: "APPLE", icon: "https://cdn.simpleicons.org/apple/white" },
+        { name: "SAMSUNG", icon: "https://cdn.simpleicons.org/samsung/white" },
+        { name: "MOTOROLA", icon: "https://cdn.simpleicons.org/motorola/white" },
+        { name: "XIAOMI", icon: "https://cdn.simpleicons.org/xiaomi/white" },
+        { name: "GOOGLE", icon: "https://cdn.simpleicons.org/google/white" },
+        { name: "HONOR", icon: "https://cdn.simpleicons.org/honor/white" },
+        { name: "ONEPLUS", icon: "https://cdn.simpleicons.org/oneplus/white" },
+        { name: "NUBIA", icon: null },
+        { name: "REALME", icon: "https://cdn.simpleicons.org/realme/white" }
+      ];
+
+      const duplicatedBrands = [...brands, ...brands];
+
+      return (
+        <div className="w-full bg-dark border-y border-white/5 py-8 overflow-hidden relative flex items-center mb-16 mt-4">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-dark to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-dark to-transparent z-10 pointer-events-none"></div>
+
+          <div className="flex w-max animate-scroll gap-20 px-10 items-center">
+            {duplicatedBrands.map((brand, index) => (
+              <div key={index} className="flex items-center justify-center gap-4 opacity-30 hover:opacity-100 transition-opacity duration-300 cursor-default">
+                {brand.icon && (
+                  <img src={brand.icon} alt={`Logo ${brand.name}`} className="h-9 w-auto object-contain" />
+                )}
+                <span className="font-display text-4xl tracking-widest text-white">{brand.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     function App() {
       const [products, setProducts] = useState([]);
       const [loading, setLoading] = useState(true);
@@ -260,7 +313,7 @@
         fetchProducts();
       }, []);
 
-      async function fetchProducts() {
+      function fetchProducts() {
         if (CONFIG.SHEET_ID === "TU_SHEET_ID_AQUI") {
           setTimeout(() => {
             setProducts(DEMO_PRODUCTS);
@@ -269,39 +322,60 @@
           }, 1200);
           return;
         }
-        try {
-          const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
-          const res = await fetch(url);
-          const text = await res.text();
-          const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-          const rows = json.table.rows;
-          const parsed = rows.map(r => {
-            let rawF = r.c[2]?.f || "";
-            let rawV = r.c[2]?.v?.toString() || "";
-            let finalPrecio = rawF || rawV || "0";
-            if (finalPrecio.includes("VALUE") || finalPrecio.toLowerCase() === "value") {
-              finalPrecio = "Consultar";
-            }
 
-            return {
-              nombre: r.c[0]?.v || "",
-              marca: r.c[1]?.v || "",
-              precio: finalPrecio,
-              precioRaw: parseFloat(rawV) || 0,
-              stock: r.c[3]?.v?.toString() || "0",
-              imagen: r.c[4]?.v || "",
-              descripcion: r.c[5]?.v || "",
-              categoria: r.c[6]?.v || "",
-            };
-          }).filter(p => p.nombre && p.nombre.toLowerCase() !== "nombre");
-          setProducts(parsed);
-          setLoading(false);
-        } catch (e) {
-          console.error(e);
+        // Definimos la función de error por si falla
+        const mostrarError = () => {
           setError("No se pudo conectar con Google Sheets. Verificá el Sheet ID y que el documento sea público.");
           setProducts(DEMO_PRODUCTS);
           setUsingDemo(true);
           setLoading(false);
+        };
+
+        // Método JSONP: Evita errores de CORS al abrir la web localmente (file://)
+        window.google = window.google || {};
+        window.google.visualization = window.google.visualization || {};
+        window.google.visualization.Query = {
+          setResponse: function (json) {
+            try {
+              const rows = json.table.rows;
+              const parsed = rows.map(r => {
+                let rawF = r.c[2]?.f || "";
+                let rawV = r.c[2]?.v?.toString() || "";
+                let finalPrecio = rawF || rawV || "0";
+                if (finalPrecio.includes("VALUE") || finalPrecio.toLowerCase() === "value") {
+                  finalPrecio = "Consultar";
+                }
+
+                return {
+                  nombre: r.c[0]?.v || "",
+                  marca: r.c[1]?.v || "",
+                  precio: finalPrecio,
+                  precioRaw: parseFloat(rawV) || 0,
+                  stock: r.c[3]?.v?.toString() || "0",
+                  imagen: r.c[4]?.v || "",
+                  descripcion: r.c[5]?.v || "",
+                  categoria: r.c[6]?.v || "",
+                };
+              }).filter(p => p.nombre && p.nombre.toLowerCase() !== "nombre");
+
+              setProducts(parsed);
+              setLoading(false);
+            } catch (e) {
+              console.error("Error al procesar los datos de Sheets:", e);
+              mostrarError();
+            }
+          }
+        };
+
+        try {
+          const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(CONFIG.SHEET_NAME)}`;
+          const script = document.createElement('script');
+          script.src = url;
+          script.onerror = mostrarError;
+          document.head.appendChild(script);
+        } catch (e) {
+          console.error(e);
+          mostrarError();
         }
       }
 
@@ -345,19 +419,19 @@
 
           {/* NAVBAR */}
           <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-dark/80 backdrop-blur-md border-b border-white/5">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <img src="logo.jpeg" alt="Logo" className="h-10 w-auto rounded border border-white/10" onError={(e) => { e.target.style.display = 'none'; }} />
               <div className="font-display text-2xl tracking-widest hidden sm:block text-white">
                 DIGITAL<span className="text-brand">CONECTION</span>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-6">
-              <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })} 
+              <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })}
                 className="hidden md:block text-sm font-medium text-gray-300 hover:text-brand transition-colors">
                 Ver Equipos
               </button>
-              
+
               <button onClick={openWAGeneral} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-[#25D366] hover:bg-[#1da851] transition-transform hover:scale-105 shadow-lg shadow-[#25D366]/20">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
@@ -369,34 +443,126 @@
           </nav>
 
           {/* HERO */}
-          <section ref={heroRef} className="pt-32 pb-20 px-6 relative overflow-hidden flex items-center min-h-[70vh]">
+          <section ref={heroRef} className="pt-32 pb-20 px-6 relative overflow-hidden" style={{ minHeight: "80vh", display: "flex", alignItems: "center" }}>
             <div className="absolute top-[-10%] left-1/2 transform -translate-x-1/2 w-full max-w-3xl h-96 opacity-20 blur-[100px] pointer-events-none" style={{ background: "radial-gradient(circle, #00D4FF 0%, transparent 80%)" }} />
-            
-            <div className="max-w-6xl mx-auto w-full text-center flex flex-col items-center relative z-10">
-              <div className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold mb-8 border border-brand/30 bg-brand/10 text-brand animate-fade-up">
-                🔥 {enStock} equipos listos para entregar hoy
+
+            {/* GRID LAYOUT: Text left, Visual right */}
+            <div className="max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-2 gap-12 items-center relative z-10">
+
+              {/* TEXTO (IZQUIERDA) */}
+              <div className="w-full text-center xl:text-left flex flex-col items-center xl:items-start relative z-10">
+                <div className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold mb-8 border border-brand/30 bg-brand/10 text-brand animate-fade-up">
+                  🔥 {enStock} equipos listos para entregar hoy
+                </div>
+
+                <h1 className="font-display leading-[0.9] mb-6 text-white animate-fade-up" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", animationDelay: "0.1s" }}>
+                  TU PRÓXIMO CELULAR <br />
+                  <span className="text-brand">AL MEJOR PRECIO</span>
+                </h1>
+
+                <p className="text-lg max-w-2xl mb-10 text-gray-400 font-light animate-fade-up" style={{ animationDelay: "0.2s" }}>
+                  Dejá de dar vueltas. Encontrá la mejor tecnología con stock real, precios transparentes y atención personalizada por WhatsApp.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: "0.3s" }}>
+                  <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })}
+                    className="px-8 py-4 rounded-xl font-bold text-sm bg-brand text-dark transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+                    Explorar Catálogo
+                  </button>
+                  <button onClick={openWAGeneral} className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-sm text-white bg-white/5 border border-white/10 transition-all hover:bg-white/10 hover:border-brand/50">
+                    Asesoramiento gratis
+                  </button>
+                </div>
+
+                {/* Stats */}
+                <div className="flex flex-wrap gap-10 mt-14 justify-center xl:justify-start animate-fade-up" style={{ animationDelay: "0.4s" }}>
+                  {[
+                    { label: "Equipos", value: totalProductos },
+                    { label: "Stock", value: enStock },
+                    { label: "Envío", value: "24h" },
+                    { label: "Soporte", value: "Activo" },
+                  ].map(s => (
+                    <div key={s.label}>
+                      <div className="font-display text-4xl text-brand">{s.value}</div>
+                      <div className="text-sm tracking-wide text-gray-400">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              
-              <h1 className="font-display leading-[0.9] mb-6 text-white animate-fade-up" style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)", animationDelay: "0.1s" }}>
-                TU PRÓXIMO CELULAR <br />
-                <span className="text-brand">AL MEJOR PRECIO</span>
-              </h1>
-              
-              <p className="text-lg max-w-2xl mb-10 text-gray-400 font-light animate-fade-up" style={{ animationDelay: "0.2s" }}>
-                Dejá de dar vueltas. Encontrá la mejor tecnología con stock real, precios transparentes y atención personalizada por WhatsApp.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-up" style={{ animationDelay: "0.3s" }}>
-                <button onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })}
-                  className="px-8 py-4 rounded-xl font-bold text-sm bg-brand text-dark transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,212,255,0.4)]">
-                  Explorar Catálogo
-                </button>
-                <button onClick={openWAGeneral} className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-sm text-white bg-white/5 border border-white/10 transition-all hover:bg-white/10 hover:border-brand/50">
-                  Asesoramiento gratis
-                </button>
+
+              {/* COMPOSICIÓN VISUAL (DERECHA) */}
+              <div className="hidden xl:flex relative justify-center items-center w-full h-[600px] animate-fade-up" style={{ animationDelay: "0.5s" }}>
+                {/* Resplandor de fondo central */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full" style={{ background: "#00D4FF", filter: "blur(140px)", opacity: 0.15, animation: "pulse 4s infinite" }}></div>
+
+                {/* Celular Principal (Animación flotante) */}
+                <div className="absolute z-20 w-[280px] h-[560px] rounded-[3rem] p-2 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] animate-float" style={{ background: "linear-gradient(145deg, #242424, #0A0A0A)", border: "1px solid #333", transform: "rotate(-6deg)" }}>
+                  {/* Pantalla Interna */}
+                  <div className="w-full h-full rounded-[2.5rem] overflow-hidden flex flex-col relative" style={{ background: "#080C16", border: "5px solid #000" }}>
+
+                    {/* Dynamic Island */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-30 flex items-center justify-end px-3">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#1A1A1A]"></div>
+                    </div>
+
+                    {/* Interfaz Simulada de la tienda */}
+                    <div className="flex-1 w-full bg-gradient-to-b from-[#111827] to-[#080C16] pt-16 flex flex-col">
+                      <div className="w-full px-5 pb-5 border-b border-white/5 space-y-3">
+                        <div className="flex justify-between items-center">
+                          <div className="w-8 h-8 rounded-full bg-brand/20"></div>
+                          <div className="w-20 h-4 rounded-full bg-white/10"></div>
+                        </div>
+                        <div className="w-2/3 h-6 rounded-lg bg-white/10 mb-2"></div>
+                        <div className="w-full h-32 rounded-xl bg-gradient-to-tr from-brand/10 to-transparent border border-brand/10"></div>
+                      </div>
+
+                      <div className="px-5 py-4 space-y-4">
+                        <div className="flex gap-4 items-center">
+                          <div className="w-16 h-16 rounded-xl bg-white/5"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="w-full h-3 rounded-full bg-white/10"></div>
+                            <div className="w-2/3 h-3 rounded-full bg-white/5"></div>
+                          </div>
+                        </div>
+                        <div className="flex gap-4 items-center">
+                          <div className="w-16 h-16 rounded-xl bg-white/5"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="w-full h-3 rounded-full bg-white/10"></div>
+                            <div className="w-2/3 h-3 rounded-full bg-white/5"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tarjeta Flotante Pequeña Trasera */}
+                <div className="absolute z-10 w-[240px] rounded-3xl p-6 shadow-2xl opacity-90 animate-float" style={{ background: "rgba(17, 24, 39, 0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.1)", transform: "translateX(140px) translateY(100px) rotate(8deg)", animationDelay: "1s" }}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-brand/20 text-brand">⚡</div>
+                    <div>
+                      <div className="text-xs text-brand tracking-widest font-bold">STOCK REAL</div>
+                      <div className="text-sm font-medium mt-0.5 text-white">Actualizado</div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="w-full h-2 rounded-full bg-white/10"></div>
+                    <div className="w-3/4 h-2 rounded-full bg-white/10"></div>
+                  </div>
+                </div>
+
+                {/* Etiqueta de Precio Flotante */}
+                <div className="absolute z-30 rounded-2xl px-5 py-3 shadow-xl animate-float" style={{ background: "#00D4FF", color: "#0A0A0A", transform: "translateX(-130px) translateY(-50px) rotate(-10deg)", animationDelay: "2s" }}>
+                  <div className="text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Mejor Precio</div>
+                  <div className="font-display text-3xl leading-none">GARANTIZADO</div>
+                </div>
+
               </div>
             </div>
           </section>
+
+          {/* ACÁ PONEMOS EL CARRUSEL INFINITO */}
+          <BrandCarousel />
 
           {/* AVISO DEMO */}
           {usingDemo && (
@@ -420,7 +586,7 @@
                 <h2 className="font-display text-4xl tracking-wide text-white">CATÁLOGO</h2>
                 <p className="text-sm mt-1 text-gray-400">{filtered.length} producto{filtered.length !== 1 ? "s" : ""}</p>
               </div>
-              
+
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
@@ -456,11 +622,10 @@
                 <button
                   key={c}
                   onClick={() => setFilter(c)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                    filter === c 
-                      ? "bg-brand text-dark shadow-[0_0_15px_rgba(0,212,255,0.3)]" 
-                      : "bg-card text-gray-400 border border-white/5 hover:border-white/20 hover:text-white"
-                  }`}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${filter === c
+                    ? "bg-brand text-dark shadow-[0_0_15px_rgba(0,212,255,0.3)]"
+                    : "bg-card text-gray-400 border border-white/5 hover:border-white/20 hover:text-white"
+                    }`}
                 >
                   {c}
                 </button>
@@ -496,7 +661,7 @@
           <section className="px-6 pb-24 max-w-4xl mx-auto text-center">
             <div className="rounded-3xl p-12 bg-card border border-brand/30 relative overflow-hidden">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full opacity-10 pointer-events-none" style={{ background: "radial-gradient(circle, #00D4FF 0%, transparent 70%)" }} />
-              
+
               <div className="relative z-10">
                 <p className="font-display text-5xl mb-4 text-brand">¿NO ENCONTRÁS<br />LO QUE BUSCÁS?</p>
                 <p className="text-sm mb-8 text-gray-400">Escribinos y te ayudamos a encontrar el celular ideal para vos al mejor precio.</p>
